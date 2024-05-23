@@ -21,8 +21,5 @@ github_loader = GithubFileLoader(
 documents = github_loader.load()
 
 # 3
-dir_loader = DirectoryLoader(
-    path="path/to//test_dir/", 
-    glob="**/*.txt"
-)
+dir_loader = DirectoryLoader(path="path/to/test_dir/", glob="**/*.txt")
 documents = dir_loader.load()
