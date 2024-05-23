@@ -15,10 +15,13 @@ load_dotenv()
 
 
 def get_chain(retriever):
-    template = """根據下列內容回答問題，請使用繁體中文回答:
-    {context}
-
+    template = """請利用下面context，使用繁體中文回答問題，並且回答的內容要完整且有邏輯。
+    #####
     問題: {question}
+    #####
+    context: {context}
+
+    #####
     """
     prompt = ChatPromptTemplate.from_template(template)
 
