@@ -31,6 +31,15 @@ LANGCHAIN_API_KEY=<LANGCHAIN_API_KEY>
 
 ## Usage
 
+### qdrant
+預設使用port:6333
+```bash
+cd vectorDB
+docker-compose up -d --build
+```
+
+### ollama
+
 Run ollama:
 ```bash
 ollama serve
