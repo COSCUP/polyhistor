@@ -1,5 +1,5 @@
 import os
-from typing import Any, Mapping
+from typing import Any, Literal, Mapping
 
 import requests
 from dotenv import load_dotenv
@@ -10,7 +10,7 @@ load_dotenv()
 
 
 class llm_model(LLM):
-    model: str
+    model: Literal["llama2", "gemma", "ycchen/breeze-7b-instruct-v1_0", "mistral"]
     llm_url = os.getenv("MODEL_API")
 
     def __init__(self, model: str):
@@ -20,12 +20,8 @@ class llm_model(LLM):
         extra = Extra.forbid
 
     @property
-    def _llm_type(self) -> str:
-        return self.model
-
-    @property
     def _llm_model_category(self) -> str:
-        return ["llama2", "gemma", "ycchen/breeze-7b-instruct-v1_0", "mistral"]
+        return self.model
 
     @property
     def _identifying_params(self) -> Mapping[str, Any]:
