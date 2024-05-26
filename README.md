@@ -25,8 +25,11 @@ pre-commit install
 ```bash
 LANGCHAIN_TRACING_V2=true
 LANGCHAIN_API_KEY=<LANGCHAIN_API_KEY>
+MODEL_API=<the model api from Mattermost>
 ```
-> Note: You can get the `LANGCHAIN_API_KEY` from [LangSmith](https://www.langchain.com/langsmith).
+> Note:
+> 1. You can get the `LANGCHAIN_API_KEY` from [LangSmith](https://www.langchain.com/langsmith).
+> 2. Get the `MODEL_API` from [Mattermost](https://chat.coscup.org/coscup/pl/hjez3dwmtjbk8du1rih9ne66wo).
 
 
 ## Usage
