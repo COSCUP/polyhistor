@@ -1,15 +1,12 @@
 from dotenv import load_dotenv
-from langchain.retrievers import EnsembleRetriever
-from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import OllamaEmbeddings
-from langchain_community.retrievers import BM25Retriever
 from langchain_community.vectorstores import Qdrant
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
+from qdrant_client import QdrantClient
 
 from model import llm_model
-from utils import load_docs
 
 load_dotenv()
 
@@ -45,23 +42,19 @@ def main():
     embeddings_model = "chevalblanc/acge_text_embedding"
     embeddings = OllamaEmbeddings(model=embeddings_model)
     print("Embeddings loaded")
+    COLLECTION = "datav1"
+    host = "http://localhost:6333"
 
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50, add_start_index=True)
+    vectorstore = Qdrant(
+        client=QdrantClient(host),
+        collection_name=COLLECTION,
+        embeddings=embeddings,
+        content_payload_key="content",
+    )
 
-    docs = load_docs(folder_path="../testdata")
-    print("Docs loaded")
-    all_splits = text_splitter.split_documents(docs)
-
-    vectorstore = Qdrant.from_documents(all_splits, embeddings, path="./local_qdrant", collection_name="RAG")
-    print("Vectorstore loaded")
-
-    bm25_retriever = BM25Retriever.from_documents(all_splits)
-    bm25_retriever.k = 2
     retriever = vectorstore.as_retriever(search_kwargs={"k": 5}, search_type="mmr")
 
-    ensemble_retriever = EnsembleRetriever(retrievers=[bm25_retriever, retriever], weights=[0.5, 0.5])
-
-    chain = get_chain(ensemble_retriever)
+    chain = get_chain(retriever)
 
     input_text = input(">>> ")
     while input_text.lower() != "bye":
