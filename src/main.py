@@ -1,11 +1,12 @@
 from dotenv import load_dotenv
-from langchain_community.chat_models import ChatOllama
 from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import Qdrant
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from qdrant_client import QdrantClient
+
+from model import llm_model
 
 load_dotenv()
 
@@ -18,7 +19,8 @@ def get_chain(retriever):
     """
     prompt = ChatPromptTemplate.from_template(template)
 
-    model = ChatOllama(model="qwen:4b", temperature=0)
+    # model = ChatOllama(model="qwen:4b", temperature=0)
+    model = llm_model("ycchen/breeze-7b-instruct-v1_0")
 
     def format_docs(docs):
         return "\n\n".join(doc.page_content for doc in docs)
