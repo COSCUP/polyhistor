@@ -20,7 +20,7 @@ class llm_model(LLM):
         extra = Extra.forbid
 
     @property
-    def _llm_model_category(self) -> str:
+    def _llm_type(self) -> str:
         return self.model
 
     @property
