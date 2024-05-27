@@ -1,27 +1,23 @@
-from langchain_community.document_loaders import TextLoader, UnstructuredMarkdownLoader
+from langchain_community.document_loaders.github import GithubFileLoader
 
+from classes.custom_loader import CustomDirectoryLoader
+from getpass import getpass
+
+ACCESS_TOKEN = getpass()
 
 class DocumentLoader:
     def __init__(self):
-        """
-        暫時留空 \n
-        用做整理documentloader的interface
-        """
+        pass
 
     def create(self, config: dict):
-        """
-        透過create創建愈使用的DocumentLoader
-        已加入:[UnstructuredMarkdownLoader]
-        ------------------------------------\n
-        class UnstructuredMarkdownLoader(
-            file_path: str | List[str] | Path | List[Path] | None,
-            mode: str = "single",
-            **unstructured_kwargs: Any
-        )\n
+        if config["name"] == "CustomDirectoryLoader":
+            return CustomDirectoryLoader(directory_path=config["dir_path"], client=config["client"])
+        if config["name"] == "GithubFileLoader":
+            return GithubFileLoader(repo=config["repo_url"], access_token=ACCESS_TOKEN, github_api_url="https://api.github.com", branch=config["branch"], file_filter=lambda file_path: file_path.endswith(config["file_extension"]))
 
-        Initialize with file path.
-        """
-        if config["name"] == "UnstructuredMarkdownLoader":
-            return UnstructuredMarkdownLoader(config["file_path"], config["mode"])
-        if config["name"] == "TextLoader":
-            return TextLoader(config["file_path"])
+    def get_metadata(self, doc, fields: list):
+        metadata = {}
+        for field in fields:
+            if field in doc.metadata:
+                metadata[field] = doc.metadata[field]
+        return metadata
