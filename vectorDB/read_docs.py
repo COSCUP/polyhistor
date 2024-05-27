@@ -20,7 +20,7 @@ def read_document(
 def main():
     db = VectorDB(host="http://localhost:6333")
     COLLECTION_NAME = "test"
-    
+
     embedding = OllamaEmbeddings(model="chevalblanc/acge_text_embedding")
 
     headers = [("#", "Header 1"), ("##", "Header 2"), ("###", "Header 3")]
@@ -29,7 +29,7 @@ def main():
         "headers_to_split_on": headers,
     }
     splitters = TextSplitter()
-    
+
     documentLoaders = DocumentLoader()
     documentLoaderConfig = {
         "name": "CustomDirectoryLoader",

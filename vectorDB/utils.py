@@ -75,4 +75,3 @@ def delete_file_record(client: QdrantClient, file_path: str):
         )
     except Exception as e:
         print(f"Error deleting file record for {file_path} in Qdrant: {e}")
-
