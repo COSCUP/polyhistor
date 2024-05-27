@@ -8,12 +8,13 @@ repos:
       - id: check-merge-conflict
       - id: check-yaml
       - id: end-of-file-fixer
+        exclude: '^vectorDB/qdrant_storage/'
       - id: fix-encoding-pragma
         args: [--remove]
       - id: mixed-line-ending
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
-        exclude: "__snapshots__/"
+        exclude: "^vectorDB/qdrant_storage/|__snapshots__/"
   # this is not technically always safe but usually is
   # use comments `# isort: off` and `# isort: on` to disable/re-enable isort
   - repo: https://github.com/pycqa/isort
