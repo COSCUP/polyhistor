@@ -31,12 +31,16 @@ def main():
     splitters = TextSplitter()
 
     documentLoaders = DocumentLoader()
+    
+    # TODO
+    # local files
     documentLoaderConfig = {
         "name": "CustomDirectoryLoader",
         "dir_path": "../testdata",
         "client": QdrantClient("http://localhost:6333/"),
     }
-
+    
+    # github repository
     # documentLoaderConfig = {
     #     "name": "GithubFileLoader",
     #     "repo_url": "kt-cheng/shap-e-docker",
@@ -56,11 +60,14 @@ def main():
             text = split_doc.page_content
             payload = split_doc.metadata
             payload["content"] = text
-
+            
+            # local files
             payload["metadata"] = {
                 "source": doc.metadata["source"],
                 "hash": doc.metadata["hash"],
             }
+            
+            # github repository
             # payload["metadata"] = {
             #     "source": doc.metadata["source"],
             #     "sha": doc.metadata["sha"],
