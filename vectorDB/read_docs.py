@@ -2,9 +2,9 @@ from langchain_community.embeddings import OllamaEmbeddings
 
 from qdrant_client import QdrantClient
 
-from classes.vectorDB import VectorDB
-from classes.textSplitter import TextSplitter
-from classes.documentLoader import DocumentLoader
+from classes.vector_db import VectorDB
+from classes.text_splitter import TextSplitter
+from classes.document_loader import DocumentLoader
 
 
 def read_document(

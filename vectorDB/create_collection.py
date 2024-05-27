@@ -1,4 +1,4 @@
-from classes.vectorDB import VectorDB
+from classes.vector_db import VectorDB
 
 
 def main():
