@@ -34,6 +34,23 @@ MODEL_API=<the model api from Mattermost>
 
 ## Usage
 
+### qdrant
+預設使用port:6333
+### Add or Update Data
+如果要新增或修改資料請使用此方法
+```bash
+cd vectorDB
+docker-compose -f addData/docker-compose.yml up -d  
+```
+### Run DB
+```bash
+cd vectorDB
+docker build -t polyhistor:db .
+docker run -d --restart always -p 6333:6333 --name polyhistor_qdrant polyhistor:db
+```
+
+### ollama
+
 Run ollama:
 ```bash
 ollama serve
