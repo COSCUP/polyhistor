@@ -1,9 +1,17 @@
+import os
+from dotenv import load_dotenv
+
 from langchain_community.document_loaders.github import GithubFileLoader
 
 from classes.custom_loader import CustomDirectoryLoader
 from getpass import getpass
 
-ACCESS_TOKEN = getpass()
+load_dotenv()
+
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
+
+if not ACCESS_TOKEN:
+    ACCESS_TOKEN = getpass()
 
 
 class DocumentLoader:
