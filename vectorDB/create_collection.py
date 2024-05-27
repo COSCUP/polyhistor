@@ -1,5 +1,6 @@
 from classes.vectorDB import VectorDB
 
+
 def main():
     db = VectorDB(host="http://localhost:6333")
     COLLECTION_NAME = "test"
@@ -23,6 +24,7 @@ def main():
         if collection_flag == True:
             print(f"Create collection-{COLLECTION_NAME}")
             db.create_collection(COLLECTION_NAME)
+
 
 if __name__ == "__main__":
     main()

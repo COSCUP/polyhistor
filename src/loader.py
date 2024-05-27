@@ -1,6 +1,12 @@
 import glob
 
-from langchain_community.document_loaders import PyPDFLoader, TextLoader, UnstructuredFileLoader, UnstructuredMarkdownLoader, UnstructuredWordDocumentLoader
+from langchain_community.document_loaders import (
+    PyPDFLoader,
+    TextLoader,
+    UnstructuredFileLoader,
+    UnstructuredMarkdownLoader,
+    UnstructuredWordDocumentLoader,
+)
 from langchain_core.documents.base import Document
 from tqdm import tqdm
 
