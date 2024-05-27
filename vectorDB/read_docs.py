@@ -43,8 +43,7 @@ def main():
     # github repository
     # documentLoaderConfig = {
     #     "name": "GithubFileLoader",
-    #     "repo_url": "kt-cheng/shap-e-docker",
-    #     # "repo_url": "COSCUP/COSCUP-Volunteer",
+    #     "repo_url": "COSCUP/COSCUP-Volunteer",
     #     "branch": "main",
     #     "file_extension": ".md",
     # }
