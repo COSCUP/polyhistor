@@ -1,0 +1,8 @@
+.env
+.DS_store
+testdata/
+faiss_index/
+docs/
+exp/
+local_qdrant/
+__pycache__/
