@@ -12,11 +12,11 @@ load_dotenv()
 
 
 def get_chain(retriever):
-    template = """請利用下面context，使用繁體中文回答問題，並且回答的內容要完整且有邏輯。
+    template = """你是一位COSCUP的工作人員，請利用下面的資訊，使用繁體中文回答問題，並且回答的內容要完整且有邏輯。
     #####
     問題: {question}
     #####
-    context: {context}
+    {context}
 
     #####
     """
