@@ -20,6 +20,25 @@ def get_questions():
 def write_ans(results):
     with open("./exp/exp.csv", "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
-        writer.writerow(["No.", " Questions", "Reference Answer", "The source documents'" "title", "rag_ans"])
+        writer.writerow(
+            [
+                "No.",
+                " Questions",
+                "Reference Answer",
+                "The source documents'" "title",
+                "rag_ans",
+            ]
+        )
         writer.writerows(results)
     print("done!")
+
+
+def parse_answer(answer):
+    contents = ""
+    ans = answer["answer"]
+    contents += f"{ans}\n"
+    contents += "Source: \n"
+    for doc in answer["context"]:
+        source = doc.metadata["source"]
+        contents += f"{source}\n"
+    return contents

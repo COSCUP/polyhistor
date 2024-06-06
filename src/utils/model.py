@@ -32,7 +32,10 @@ class llm_model(LLM):
         return self._call(prompt)
 
     def _call(self, prompt: str, stop=None) -> str:
-        payload = {"model": self.model, "messages": [{"role": "user", "content": prompt}]}
+        payload = {
+            "model": self.model,
+            "messages": [{"role": "user", "content": prompt}],
+        }
 
         headers = {"Content-Type": "application/json"}
 
