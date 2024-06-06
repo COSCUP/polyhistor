@@ -6,4 +6,4 @@ docs/
 exp/
 local_qdrant/
 __pycache__/
-vectorDB/qdrant_storage/
+vectorDB/qdrant_storage
