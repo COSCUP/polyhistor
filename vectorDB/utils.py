@@ -1,7 +1,8 @@
 import hashlib
+import re
 
-from qdrant_client.http import models
 from qdrant_client import QdrantClient
+from qdrant_client.http import models
 
 
 def compute_file_hash(file_path: str):
@@ -38,9 +39,7 @@ def retrieve_file_record(client: QdrantClient, file_path: str):
             collection_name="test",
             scroll_filter=models.Filter(
                 should=[
-                    models.FieldCondition(
-                        key="metadata.source", match=models.MatchValue(value=file_path)
-                    ),
+                    models.FieldCondition(key="metadata.source", match=models.MatchValue(value=file_path)),
                 ],
             ),
         )
@@ -75,3 +74,24 @@ def delete_file_record(client: QdrantClient, file_path: str):
         )
     except Exception as e:
         print(f"Error deleting file record for {file_path} in Qdrant: {e}")
+
+
+def filter_data(text: str, file_type: str) -> str:
+    """filter data based on file type
+
+    Args:
+        text (str): file content
+        file_type (str): file type
+
+    Returns:
+        str: filtered text
+    """
+
+    if file_type == "md":
+        pattern = r"!\[.*?\]\(.*?\)|\[[^\]]*?\]\(.*?\)"
+        text = re.sub(pattern, "", text)
+        text = f"The following content is markdown:\n\n{text} \n\n"
+    elif file_type == "pdf":
+        text = text.replace("\n", "")
+
+    return text

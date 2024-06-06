@@ -1,10 +1,9 @@
-from langchain_community.embeddings import OllamaEmbeddings
-
-from qdrant_client import QdrantClient
-
-from classes.vector_db import VectorDB
-from classes.text_splitter import TextSplitter
 from classes.document_loader import DocumentLoader
+from classes.text_splitter import TextSplitter
+from classes.vector_db import VectorDB
+from langchain_community.embeddings import OllamaEmbeddings
+from qdrant_client import QdrantClient
+from utils import filter_data
 
 
 def read_document(
@@ -31,7 +30,7 @@ def main():
     splitters = TextSplitter()
 
     documentLoaders = DocumentLoader()
-    
+
     # TODO
     # local files
     documentLoaderConfig = {
@@ -39,7 +38,7 @@ def main():
         "dir_path": "../testdata",
         "client": QdrantClient("http://localhost:6333/"),
     }
-    
+
     # github repository
     # documentLoaderConfig = {
     #     "name": "GithubFileLoader",
@@ -54,24 +53,24 @@ def main():
     datas = []
     for doc in documents:
         split_documents = splitter.split_text(doc.page_content)
-
+        file_type = doc.metadata["source"].split(".")[-1]
         for split_doc in split_documents:
-            text = split_doc.page_content
+            text = filter_data(split_doc.page_content, file_type)
             payload = split_doc.metadata
             payload["content"] = text
-            
+
             # local files
             payload["metadata"] = {
                 "source": doc.metadata["source"],
                 "hash": doc.metadata["hash"],
             }
-            
+
             # github repository
             # payload["metadata"] = {
             #     "source": doc.metadata["source"],
             #     "sha": doc.metadata["sha"],
             # }
-            vector = embedding.embed_query(text=text)
+            vector = embedding.embed_query(text=payload["content"])
             data = {"vector": vector, "payload": payload}
 
             datas.append(data)
