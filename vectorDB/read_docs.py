@@ -41,10 +41,10 @@ def main():
     # github repository
     # documentLoaderConfig = {
     #     "name": "GithubFileLoader",
-    #     "repo": "kt-cheng/Portal",
+    #     "repo": "COSCUP/COSCUP-Volunteer",
     #     "access_token": ACCESS_TOKEN,
     #     "github_api_url": "https://api.github.com",
-    #     "branch": "master",
+    #     "branch": "main",
     #     "file_extension": ".md",
     # }
 
