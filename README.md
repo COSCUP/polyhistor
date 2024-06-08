@@ -34,6 +34,7 @@ LANGCHAIN_TRACING_V2=true
 LANGCHAIN_API_KEY=<LANGCHAIN_API_KEY>
 MODEL_API=<the model api from Mattermost>
 ACCESS_TOKEN=<Github access token>
+BACKEND_API = "http://localhost:8000/api/v1/ask"
 ```
 > Note:
 > 1. You can get the `LANGCHAIN_API_KEY` from [LangSmith](https://www.langchain.com/langsmith).
@@ -77,6 +78,11 @@ Run Ollama:
 ollama serve
 ```
 > Default embedding model is `chevalblanc/acge_text_embedding` and default language model is `qwen:4b`.
+
+### Backend
+```bash
+poetry run uvicorn index:app --reload --host 0.0.0.0 --port 8000
+```
 
 ### Q & A
 
