@@ -20,7 +20,7 @@ if not ACCESS_TOKEN:
 
 def main():
     db = VectorDB(host="http://localhost:6333")
-    COLLECTION_NAME = "test"
+    COLLECTION_NAME = "datav1"
 
     embedding = OllamaEmbeddings(model="chevalblanc/acge_text_embedding")
 
@@ -38,7 +38,7 @@ def main():
         "directory_path": "../testdata",
         "client": QdrantClient("http://localhost:6333/"),
     }
-    # github repository
+    # github repository # TODO: detect github file changes
     # documentLoaderConfig = {
     #     "name": "GithubFileLoader",
     #     "repo": "COSCUP/COSCUP-Volunteer",

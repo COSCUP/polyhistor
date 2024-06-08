@@ -30,4 +30,7 @@ class DocumentLoader:
     @staticmethod
     def get_metadata(doc, doc_loader: list):
         fields = DocumentLoader.metadata.get(doc_loader, [])
-        return {field: doc.metadata.get(field) for field in fields}
+        metadata = {field: doc.metadata.get(field) for field in fields}
+        if "api.github.com" in metadata["source"]:
+            metadata["source"] = metadata["source"].replace("api.github.com", "github.com")
+        return metadata
