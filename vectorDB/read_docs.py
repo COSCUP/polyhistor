@@ -1,3 +1,7 @@
+import os
+from dotenv import load_dotenv
+from getpass import getpass
+
 from langchain_community.embeddings import OllamaEmbeddings
 
 from qdrant_client import QdrantClient
@@ -6,20 +10,17 @@ from classes.vector_db import VectorDB
 from classes.text_splitter import TextSplitter
 from classes.document_loader import DocumentLoader
 
+load_dotenv()
 
-def read_document(
-    documentLoaders: DocumentLoader,
-    documentLoaderConfig: dict,
-):
-    documentLoader = documentLoaders.create(documentLoaderConfig)
-    documents = documentLoader.load()
+ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
 
-    return documents
+if not ACCESS_TOKEN:
+    ACCESS_TOKEN = getpass()
 
 
 def main():
     db = VectorDB(host="http://localhost:6333")
-    COLLECTION_NAME = "test"
+    COLLECTION_NAME = "datav1"
 
     embedding = OllamaEmbeddings(model="chevalblanc/acge_text_embedding")
 
@@ -29,27 +30,26 @@ def main():
         "headers_to_split_on": headers,
     }
     splitters = TextSplitter()
+    splitter = splitters.create(splitterConfig)
 
-    documentLoaders = DocumentLoader()
-    
-    # TODO
     # local files
     documentLoaderConfig = {
         "name": "CustomDirectoryLoader",
-        "dir_path": "../testdata",
+        "directory_path": "../testdata",
         "client": QdrantClient("http://localhost:6333/"),
     }
-    
-    # github repository
+    # github repository # TODO: detect github file changes
     # documentLoaderConfig = {
     #     "name": "GithubFileLoader",
-    #     "repo_url": "COSCUP/COSCUP-Volunteer",
+    #     "repo": "COSCUP/COSCUP-Volunteer",
+    #     "access_token": ACCESS_TOKEN,
+    #     "github_api_url": "https://api.github.com",
     #     "branch": "main",
     #     "file_extension": ".md",
     # }
 
-    splitter = splitters.create(splitterConfig)
-    documents = read_document(documentLoaders, documentLoaderConfig)
+    loader = DocumentLoader.create(documentLoaderConfig)
+    documents = loader.load()
 
     datas = []
     for doc in documents:
@@ -59,18 +59,9 @@ def main():
             text = split_doc.page_content
             payload = split_doc.metadata
             payload["content"] = text
-            
-            # local files
-            payload["metadata"] = {
-                "source": doc.metadata["source"],
-                "hash": doc.metadata["hash"],
-            }
-            
-            # github repository
-            # payload["metadata"] = {
-            #     "source": doc.metadata["source"],
-            #     "sha": doc.metadata["sha"],
-            # }
+            payload["metadata"] = DocumentLoader.get_metadata(
+                doc, documentLoaderConfig["name"]
+            )
             vector = embedding.embed_query(text=text)
             data = {"vector": vector, "payload": payload}
 

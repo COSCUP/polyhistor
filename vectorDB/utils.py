@@ -35,7 +35,7 @@ def retrieve_file_record(client: QdrantClient, file_path: str):
     """
     try:
         result, _ = client.scroll(
-            collection_name="test",
+            collection_name="datav1",
             scroll_filter=models.Filter(
                 should=[
                     models.FieldCondition(
@@ -61,7 +61,7 @@ def delete_file_record(client: QdrantClient, file_path: str):
     """
     try:
         client.delete(
-            collection_name="test",
+            collection_name="datav1",
             points_selector=models.FilterSelector(
                 filter=models.Filter(
                     must=[
