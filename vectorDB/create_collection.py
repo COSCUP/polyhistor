@@ -3,7 +3,7 @@ from classes.vector_db import VectorDB
 
 def main():
     db = VectorDB(host="http://localhost:6333")
-    COLLECTION_NAME = "test"
+    COLLECTION_NAME = "datav1"
 
     collection_flag = True
     recreation_Flag = True

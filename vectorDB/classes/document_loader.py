@@ -1,42 +1,36 @@
-import os
-from dotenv import load_dotenv
-
 from langchain_community.document_loaders.github import GithubFileLoader
 
 from classes.custom_loader import CustomDirectoryLoader
-from getpass import getpass
-
-load_dotenv()
-
-ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
-
-if not ACCESS_TOKEN:
-    ACCESS_TOKEN = getpass()
 
 
 class DocumentLoader:
-    def __init__(self):
-        pass
+    loaders = {
+        "CustomDirectoryLoader": CustomDirectoryLoader,
+        "GithubFileLoader": GithubFileLoader,
+    }
+    metadata = {
+        "CustomDirectoryLoader": ["source", "hash"],
+        "GithubFileLoader": ["source", "sha"],
+    }
 
-    def create(self, config: dict):
-        if config["name"] == "CustomDirectoryLoader":
-            return CustomDirectoryLoader(
-                directory_path=config["dir_path"], client=config["client"]
-            )
+    @staticmethod
+    def create(config: dict):
+        loader_class = DocumentLoader.loaders.get(config["name"])
+        if not loader_class:
+            raise ValueError(f"Unsupported document loader: {config['name']}")
+
         if config["name"] == "GithubFileLoader":
-            return GithubFileLoader(
-                repo=config["repo_url"],
-                access_token=ACCESS_TOKEN,
-                github_api_url="https://api.github.com",
-                branch=config["branch"],
-                file_filter=lambda file_path: file_path.endswith(
-                    config["file_extension"]
-                ),
-            )
+            file_extension = config.get("file_extension", "")
+            file_filter = lambda file_path: file_path.endswith(file_extension)
+            config.pop("file_extension", None)
+            config["file_filter"] = file_filter
 
-    def get_metadata(self, doc, fields: list):
-        metadata = {}
-        for field in fields:
-            if field in doc.metadata:
-                metadata[field] = doc.metadata[field]
+        return loader_class(**{k: v for k, v in config.items() if k != "name"})
+
+    @staticmethod
+    def get_metadata(doc, doc_loader: list):
+        fields = DocumentLoader.metadata.get(doc_loader, [])
+        metadata = {field: doc.metadata.get(field) for field in fields}
+        if "api.github.com" in metadata["source"]:
+            metadata["source"] = metadata["source"].replace("api.github.com", "github.com")
         return metadata

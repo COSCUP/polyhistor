@@ -1,12 +1,11 @@
+import os
+
+import requests
 from dotenv import load_dotenv
-from langchain.load import dumps, loads
-from langchain_community.embeddings import OllamaEmbeddings
-from langchain_community.vectorstores import Qdrant
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from qdrant_client import QdrantClient
 
-from model import llm_model
+from utils.model import llm_model
 
 load_dotenv()
 
@@ -72,31 +71,15 @@ def parse_answer(answer, metadata):
 
 
 def main():
-    embeddings_model = "chevalblanc/acge_text_embedding"
-    embeddings = OllamaEmbeddings(model=embeddings_model)
-    print("Embeddings loaded")
-    COLLECTION = "test"
-    host = "http://localhost:6333"
-
-    vectorstore = Qdrant(
-        client=QdrantClient(host),
-        collection_name=COLLECTION,
-        embeddings=embeddings,
-        content_payload_key="content",
-    )
-
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 5}, search_type="mmr")
-
-    chain = get_chain()
+    url = os.environ.get("BACKEND_URL")
 
     input_text = input(">>> ")
     while input_text.lower() != "bye":
-        fused_results = parse_fusion_results(rag_fusion(input_text, retriever))
-
-        print("retrieved documents length: ", len(fused_results["content"]))
-
-        answer = chain.invoke({"question": input_text, "context": "\n\n".join(fused_results["content"])})
-        parse_answer(answer, fused_results["metadata"])
+        data = {"query": input_text.lower()}
+        response = requests.post(url=url, json=data, headers={"Content-Type": "application/json"})
+        contents = response.text.split("\\n")
+        for content in contents:
+            print(content)
         input_text = input(">>> ")
 
 
