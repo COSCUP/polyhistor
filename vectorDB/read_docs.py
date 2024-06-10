@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 from langchain_community.embeddings import OllamaEmbeddings
 from qdrant_client import QdrantClient
 
-from utils import filter_data
-
 load_dotenv()
 
 ACCESS_TOKEN = os.getenv("ACCESS_TOKEN")
@@ -32,17 +30,13 @@ def main():
     splitters = TextSplitter()
     splitter = splitters.create(splitterConfig)
 
-    DocumentLoader()
-
-    # TODO
     # local files
     documentLoaderConfig = {
         "name": "CustomDirectoryLoader",
         "directory_path": "../testdata",
         "client": QdrantClient("http://localhost:6333/"),
     }
-
-    # github repository
+    # github repository # TODO: detect github file changes
     # documentLoaderConfig = {
     #     "name": "GithubFileLoader",
     #     "repo": "COSCUP/COSCUP-Volunteer",
@@ -58,24 +52,13 @@ def main():
     datas = []
     for doc in documents:
         split_documents = splitter.split_text(doc.page_content)
-        file_type = doc.metadata["source"].split(".")[-1]
+
         for split_doc in split_documents:
-            text = filter_data(split_doc.page_content, file_type)
+            text = split_doc.page_content
             payload = split_doc.metadata
             payload["content"] = text
-
-            # local files
-            payload["metadata"] = {
-                "source": doc.metadata["source"],
-                "hash": doc.metadata["hash"],
-            }
-
-            # github repository
-            # payload["metadata"] = {
-            #     "source": doc.metadata["source"],
-            #     "sha": doc.metadata["sha"],
-            # }
-            vector = embedding.embed_query(text=payload["content"])
+            payload["metadata"] = DocumentLoader.get_metadata(doc, documentLoaderConfig["name"])
+            vector = embedding.embed_query(text=text)
             data = {"vector": vector, "payload": payload}
 
             datas.append(data)
