@@ -9,6 +9,11 @@ poetry shell
 poetry install
 ```
 
+Install Ollama
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
 
 Create `testdata` directory in the root directory and add files.
 

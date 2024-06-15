@@ -5,6 +5,7 @@ from langchain_community.vectorstores import Qdrant
 from qdrant_client import QdrantClient
 
 from src.chains.answerChain import answerChain
+from src.chains.multiqueryChain import multiqueryChain, parse_fusion_results
 from src.models import Query
 from src.utils.exp import parse_answer
 from src.utils.config import get_config
@@ -43,8 +44,12 @@ async def askAPI(data: Query):
     )
 
     retriever = vectorstore.as_retriever(search_kwargs={"k": 5}, search_type="mmr")
-    chain = answerChain(retriever, config.model.llm)
+    answerchain = answerChain()
+    multiquerychain = multiqueryChain(retriever)
 
-    answer = parse_answer(chain.invoke(data.query))
+    fused_results = parse_fusion_results(multiquerychain.invoke({"original_query": data.query}))
+    answer = answerchain.invoke({"question": data.query, "context": "\n\n".join(fused_results["content"])})
+    answer = parse_answer(answer, fused_results["metadata"])
     print(answer)
+
     return answer
