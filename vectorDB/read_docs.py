@@ -1,14 +1,12 @@
 import os
-from dotenv import load_dotenv
 from getpass import getpass
 
-from langchain_community.embeddings import OllamaEmbeddings
-
-from qdrant_client import QdrantClient
-
-from classes.vector_db import VectorDB
-from classes.text_splitter import TextSplitter
 from classes.document_loader import DocumentLoader
+from classes.text_splitter import TextSplitter
+from classes.vector_db import VectorDB
+from dotenv import load_dotenv
+from langchain_community.embeddings import OllamaEmbeddings
+from qdrant_client import QdrantClient
 
 load_dotenv()
 
@@ -59,9 +57,7 @@ def main():
             text = split_doc.page_content
             payload = split_doc.metadata
             payload["content"] = text
-            payload["metadata"] = DocumentLoader.get_metadata(
-                doc, documentLoaderConfig["name"]
-            )
+            payload["metadata"] = DocumentLoader.get_metadata(doc, documentLoaderConfig["name"])
             vector = embedding.embed_query(text=text)
             data = {"vector": vector, "payload": payload}
 
