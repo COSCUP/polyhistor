@@ -1,9 +1,16 @@
-from classes.vector_db import VectorDB
+import sys
+import os
 
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.append(project_root)
+
+from classes.vector_db import VectorDB
+from src.utils.config import get_config
 
 def main():
-    db = VectorDB(host="http://localhost:6333")
-    COLLECTION_NAME = "datav1"
+    config = get_config(config_path=f"{project_root}/config.yaml")
+    db = VectorDB(host=config.database.host)
+    COLLECTION_NAME = config.database.collection
 
     collection_flag = True
     recreation_Flag = True

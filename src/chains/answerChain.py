@@ -5,7 +5,7 @@ from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from src.utils.model import llm_model
 
 
-def answerChain(retriever):
+def answerChain(retriever, model):
     template = """你是一位COSCUP的工作人員，請利用下面的資訊，使用繁體中文回答問題，並且回答的內容要完整且有邏輯。
     #####
     問題: {question}
@@ -16,8 +16,7 @@ def answerChain(retriever):
     """
     prompt = ChatPromptTemplate.from_template(template)
 
-    # model = ChatOllama(model="qwen:4b", temperature=0)
-    model = llm_model("ycchen/breeze-7b-instruct-v1_0")
+    model = llm_model(model)
 
     def format_docs(docs):
         return "\n\n".join(doc.page_content for doc in docs)
