@@ -7,8 +7,8 @@ from qdrant_client import QdrantClient
 from src.chains.answerChain import answerChain
 from src.chains.multiqueryChain import multiqueryChain, parse_fusion_results
 from src.models import Query
-from src.utils.exp import parse_answer
 from src.utils.config import get_config
+from src.utils.exp import parse_answer
 
 router = APIRouter()
 
@@ -44,8 +44,8 @@ async def askAPI(data: Query):
     )
 
     retriever = vectorstore.as_retriever(search_kwargs={"k": 5}, search_type="mmr")
-    answerchain = answerChain()
-    multiquerychain = multiqueryChain(retriever)
+    answerchain = answerChain(model=config.model.llm)
+    multiquerychain = multiqueryChain(retriever=retriever, model=config.model.llm)
 
     fused_results = parse_fusion_results(multiquerychain.invoke({"original_query": data.query}))
     answer = answerchain.invoke({"question": data.query, "context": "\n\n".join(fused_results["content"])})

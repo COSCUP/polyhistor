@@ -1,18 +1,9 @@
-import os
-
 import requests
 from dotenv import load_dotenv
 
 from utils.config import get_config
 
 load_dotenv()
-
-
-def parse_answer(answer):
-    print(answer["answer"])
-    print("Source: ")
-    for doc in answer["context"]:
-        print(doc.metadata["source"])
 
 
 def main():
