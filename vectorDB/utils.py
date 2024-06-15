@@ -1,8 +1,14 @@
 import hashlib
+import os
 import re
+import sys
 
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+sys.path.append(project_root)
 from qdrant_client import QdrantClient
 from qdrant_client.http import models
+
+from src.utils.config import get_config
 
 
 def compute_file_hash(file_path: str):
@@ -35,8 +41,9 @@ def retrieve_file_record(client: QdrantClient, file_path: str):
         list: Record of the file including its metadata.
     """
     try:
+        config = get_config(config_path=f"{project_root}/config.yaml")
         result, _ = client.scroll(
-            collection_name="datav1",
+            collection_name=config.database.collection,
             scroll_filter=models.Filter(
                 should=[
                     models.FieldCondition(key="metadata.source", match=models.MatchValue(value=file_path)),
@@ -59,8 +66,9 @@ def delete_file_record(client: QdrantClient, file_path: str):
         None
     """
     try:
+        config = get_config(config_path=f"{project_root}/config.yaml")
         client.delete(
-            collection_name="datav1",
+            collection_name=config.database.collection,
             points_selector=models.FilterSelector(
                 filter=models.Filter(
                     must=[

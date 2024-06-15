@@ -4,7 +4,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from src.utils.model import llm_model
 
 
-def answerChain():
+def answerChain(model):
     template = """你是一位COSCUP的工作人員，請利用下面的資訊，使用繁體中文回答問題，並且回答的內容要完整且有邏輯。
     #####
     問題: {question}
@@ -14,7 +14,7 @@ def answerChain():
     #####
     """
     prompt = ChatPromptTemplate.from_template(template)
-    model = llm_model("ycchen/breeze-7b-instruct-v1_0")
+    model = llm_model(model)
     chain = prompt | model | StrOutputParser()
 
     return chain

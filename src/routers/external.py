@@ -7,6 +7,7 @@ from qdrant_client import QdrantClient
 from src.chains.answerChain import answerChain
 from src.chains.multiqueryChain import multiqueryChain, parse_fusion_results
 from src.models import Query
+from src.utils.config import get_config
 from src.utils.exp import parse_answer
 
 router = APIRouter()
@@ -29,11 +30,11 @@ async def askAPI(data: Query):
             content={"message": "empty query is not allowed"},
         )
 
-    embeddings_model = "chevalblanc/acge_text_embedding"
+    config = get_config(config_path="config.yaml")
+    embeddings_model = config.model.embeddings_model
     embeddings = OllamaEmbeddings(model=embeddings_model)
-    print("Embeddings loaded")
-    COLLECTION = "datav1"
-    host = "http://localhost:6333"
+    COLLECTION = config.database.collection
+    host = config.database.host
 
     vectorstore = Qdrant(
         client=QdrantClient(host),
@@ -43,8 +44,8 @@ async def askAPI(data: Query):
     )
 
     retriever = vectorstore.as_retriever(search_kwargs={"k": 5}, search_type="mmr")
-    answerchain = answerChain()
-    multiquerychain = multiqueryChain(retriever)
+    answerchain = answerChain(model=config.model.llm)
+    multiquerychain = multiqueryChain(retriever=retriever, model=config.model.llm)
 
     fused_results = parse_fusion_results(multiquerychain.invoke({"original_query": data.query}))
     answer = answerchain.invoke({"question": data.query, "context": "\n\n".join(fused_results["content"])})

@@ -1,13 +1,14 @@
-import os
-
 import requests
 from dotenv import load_dotenv
+
+from utils.config import get_config
 
 load_dotenv()
 
 
 def main():
-    url = os.environ.get("BACKEND_URL")
+    config = get_config()
+    url = f"{config.backend.host}/api/v1/ask"
 
     input_text = input(">>> ")
     while input_text.lower() != "bye":

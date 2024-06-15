@@ -19,7 +19,7 @@ def reciprocal_rank_fusion(results: list[list], k=60):
     return reranked_results
 
 
-def multiqueryChain(retriever):
+def multiqueryChain(retriever, model):
 
     template = """
         You are a helpful assistant that generates multiple search queries based on a single input query.
@@ -27,7 +27,7 @@ def multiqueryChain(retriever):
         OUTPUT (4 queries):
     """
     prompt = ChatPromptTemplate.from_template(template)
-    model = llm_model("ycchen/breeze-7b-instruct-v1_0")
+    model = llm_model(model)
 
     generate_queries = prompt | model | StrOutputParser() | (lambda x: x.split("\n"))
     chain = generate_queries | retriever.map() | reciprocal_rank_fusion

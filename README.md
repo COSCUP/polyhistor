@@ -27,14 +27,13 @@ pre-commit install
 ```
 
 
-(Optional) Create a `.env` file in the root directory and add the following environment variables:
+ Create a `.env` file in the root directory and add the following environment variables:
 
 ```bash
 LANGCHAIN_TRACING_V2=true
 LANGCHAIN_API_KEY=<LANGCHAIN_API_KEY>
 MODEL_API=<the model api from Mattermost>
 ACCESS_TOKEN=<Github access token>
-BACKEND_URL = "http://localhost:8000/api/v1/ask"
 ```
 > Note:
 > 1. You can get the `LANGCHAIN_API_KEY` from [LangSmith](https://www.langchain.com/langsmith).
@@ -45,7 +44,10 @@ BACKEND_URL = "http://localhost:8000/api/v1/ask"
 ## Usage
 
 ### Qdrant
-預設使用 port:6333
+
+Default port:6333
+> If you want to change the port, please modify the `addData/docker-compose.yml` and `config.yaml`.
+
 ### Add or Update Data
 如果要新增或修改資料請使用此方法
 ```bash
@@ -77,12 +79,14 @@ Run Ollama:
 ```bash
 ollama serve
 ```
-> Default embedding model is `chevalblanc/acge_text_embedding` and default language model is `qwen:4b`.
+> Default embedding model is `chevalblanc/acge_text_embedding` and default language model is `ycchen/breeze-7b-instruct-v1_0`.
 
 ### Backend
 ```bash
 poetry run uvicorn index:app --reload --host 0.0.0.0 --port 8000
 ```
+
+Now you can access the API at `http://localhost:8000/api/v1/ask`.
 
 ### Q & A
 
