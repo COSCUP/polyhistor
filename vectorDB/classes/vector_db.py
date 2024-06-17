@@ -61,7 +61,7 @@ class VectorDB:
     def create_collection(self, collection_name):
         self.client.create_collection(
             collection_name=collection_name,
-            vectors_config=models.VectorParams(distance=models.Distance.COSINE, size=1024),
+            vectors_config=models.VectorParams(distance=models.Distance.COSINE, size=1792),
             optimizers_config=models.OptimizersConfigDiff(memmap_threshold=20000),
             hnsw_config=models.HnswConfigDiff(on_disk=True, m=16, ef_construct=100),
         )
@@ -69,7 +69,7 @@ class VectorDB:
     def recreate_collection(self, collection_name):
         self.client.recreate_collection(
             collection_name=collection_name,
-            vectors_config=models.VectorParams(distance=models.Distance.COSINE, size=1024),
+            vectors_config=models.VectorParams(distance=models.Distance.COSINE, size=1792),
             optimizers_config=models.OptimizersConfigDiff(memmap_threshold=20000),
             hnsw_config=models.HnswConfigDiff(on_disk=True, m=16, ef_construct=100),
         )

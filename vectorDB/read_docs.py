@@ -1,17 +1,18 @@
 import os
-from getpass import getpass
 import sys
+from getpass import getpass
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
-from src.utils.config import get_config
 from classes.document_loader import DocumentLoader
 from classes.text_splitter import TextSplitter
 from classes.vector_db import VectorDB
 from dotenv import load_dotenv
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from qdrant_client import QdrantClient
+
+from src.utils.config import get_config
 
 load_dotenv()
 
@@ -26,7 +27,10 @@ def main():
     db = VectorDB(host=config.database.host)
     COLLECTION_NAME = config.database.collection
 
-    embedding = OllamaEmbeddings(model=config.model.embeddings_model)
+    embeddings_model = config.model.embeddings_model
+    model_kwargs = {"device": "cpu"}
+    encode_kwargs = {"normalize_embeddings": False}
+    embedding = HuggingFaceEmbeddings(model_name=embeddings_model, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
 
     headers = [("#", "Header 1"), ("##", "Header 2"), ("###", "Header 3")]
     splitterConfig = {
@@ -39,7 +43,7 @@ def main():
     # local files
     documentLoaderConfig = {
         "name": "CustomDirectoryLoader",
-        "directory_path": "../testdata",
+        "directory_path": f"{project_root}/testdata",
         "client": QdrantClient(config.database.host),
     }
     # github repository # TODO: detect github file changes
@@ -65,6 +69,7 @@ def main():
             payload["content"] = text
             payload["metadata"] = DocumentLoader.get_metadata(doc, documentLoaderConfig["name"])
             vector = embedding.embed_query(text=text)
+
             data = {"vector": vector, "payload": payload}
 
             datas.append(data)

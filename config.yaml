@@ -1,6 +1,6 @@
-model: 
+model:
   llm: ycchen/breeze-7b-instruct-v1_0
-  embeddings_model: chevalblanc/acge_text_embedding
+  embeddings_model: aspire/acge_text_embedding
 database:
   collection: datav1
   host: http://localhost:6333

@@ -1,11 +1,13 @@
-import sys
 import os
+import sys
 
-project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.append(project_root)
 
 from classes.vector_db import VectorDB
+
 from src.utils.config import get_config
+
 
 def main():
     config = get_config(config_path=f"{project_root}/config.yaml")
@@ -30,7 +32,9 @@ def main():
                 print(f"---collection info---\n{collection_info}")
         if collection_flag == True:
             print(f"Create collection-{COLLECTION_NAME}")
-            db.create_collection(COLLECTION_NAME)
+            db.create_collection(
+                COLLECTION_NAME,
+            )
 
 
 if __name__ == "__main__":
