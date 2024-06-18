@@ -24,13 +24,17 @@ if not ACCESS_TOKEN:
 
 def main():
     config = get_config(config_path=f"{project_root}/config.yaml")
-    db = VectorDB(host=config.database.host)
+    db = VectorDB(host=config.database.external_host)
     COLLECTION_NAME = config.database.collection
 
     embeddings_model = config.model.embeddings_model
     model_kwargs = {"device": "cpu"}
     encode_kwargs = {"normalize_embeddings": False}
-    embedding = HuggingFaceEmbeddings(model_name=embeddings_model, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
+    embedding = HuggingFaceEmbeddings(
+        model_name=embeddings_model,
+        model_kwargs=model_kwargs,
+        encode_kwargs=encode_kwargs,
+    )
 
     headers = [("#", "Header 1"), ("##", "Header 2"), ("###", "Header 3")]
     splitterConfig = {
@@ -44,7 +48,7 @@ def main():
     documentLoaderConfig = {
         "name": "CustomDirectoryLoader",
         "directory_path": f"{project_root}/testdata",
-        "client": QdrantClient(config.database.host),
+        "client": QdrantClient(config.database.external_host),
     }
     # github repository # TODO: detect github file changes
     # documentLoaderConfig = {

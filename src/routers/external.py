@@ -1,3 +1,6 @@
+import os
+
+from dotenv import load_dotenv
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 from langchain_community.embeddings import HuggingFaceEmbeddings
@@ -11,6 +14,7 @@ from src.utils.config import get_config
 from src.utils.exp import parse_answer
 
 router = APIRouter()
+load_dotenv()
 
 
 @router.get("/health")
@@ -34,9 +38,17 @@ async def askAPI(data: Query):
     embeddings_model = config.model.embeddings_model
     model_kwargs = {"device": "cpu"}
     encode_kwargs = {"normalize_embeddings": False}
-    embeddings = HuggingFaceEmbeddings(model_name=embeddings_model, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
+    embeddings = HuggingFaceEmbeddings(
+        model_name=embeddings_model,
+        model_kwargs=model_kwargs,
+        encode_kwargs=encode_kwargs,
+    )
     COLLECTION = config.database.collection
-    host = config.database.host
+    print(os.getenv("MODE"))
+    if os.getenv("MODE") == "dev":
+        host = config.database.external_host
+    else:
+        host = config.database.internal_host
 
     vectorstore = Qdrant(
         client=QdrantClient(host),
