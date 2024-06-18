@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
-from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Qdrant
 from qdrant_client import QdrantClient
 
@@ -32,7 +32,9 @@ async def askAPI(data: Query):
 
     config = get_config(config_path="config.yaml")
     embeddings_model = config.model.embeddings_model
-    embeddings = OllamaEmbeddings(model=embeddings_model)
+    model_kwargs = {"device": "cpu"}
+    encode_kwargs = {"normalize_embeddings": False}
+    embeddings = HuggingFaceEmbeddings(model_name=embeddings_model, model_kwargs=model_kwargs, encode_kwargs=encode_kwargs)
     COLLECTION = config.database.collection
     host = config.database.host
 
