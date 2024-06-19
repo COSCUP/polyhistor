@@ -1,7 +1,7 @@
 import os
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, status
+from fastapi import APIRouter, status, Form
 from fastapi.responses import JSONResponse
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Qdrant
@@ -67,3 +67,15 @@ async def askAPI(data: Query):
     print(answer)
 
     return answer
+
+
+@router.post(
+    "/api/v1/chatbot",
+    tags=["external"],
+)
+async def chatbot(text: str = Form(...)):
+    data = Query(query=text.lower())
+    contents = await askAPI(data)
+
+    ans = "Question: " + text + "\n\n" + "Answer: " + "\n" + contents
+    return JSONResponse(content={"response_type": "in_channel", "text": ans})
