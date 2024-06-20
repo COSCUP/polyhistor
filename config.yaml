@@ -3,6 +3,7 @@ model:
   embeddings_model: aspire/acge_text_embedding
 database:
   collection: datav1
-  host: http://localhost:6333
+  internal_host: http://qdrant:6333
+  external_host: http://localhost:6333
 backend:
-  host: http://localhost:8000
+  host: http://localhost:8080

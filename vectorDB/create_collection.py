@@ -11,7 +11,7 @@ from src.utils.config import get_config
 
 def main():
     config = get_config(config_path=f"{project_root}/config.yaml")
-    db = VectorDB(host=config.database.host)
+    db = VectorDB(host=config.database.external_host)
     COLLECTION_NAME = config.database.collection
 
     collection_flag = True

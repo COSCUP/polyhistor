@@ -1,0 +1,26 @@
+version: '3.0'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - polyhistor
+  qdrant:
+    image: qdrant/qdrant
+    restart: always
+    ports:
+      - '6333:6333'
+    volumes:
+      - ./vectorDB/qdrant_storage:/qdrant/storage
+    networks:
+      - polyhistor
+networks:
+  polyhistor:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 152.20.0.0/16
