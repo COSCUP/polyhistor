@@ -1,8 +1,9 @@
-FROM python:3.11.8-slim
+FROM python:3.11.8-slim-bullseye as builder
 
 WORKDIR /app
 
-COPY . /app
+COPY pyproject.toml poetry.lock ./
+
 RUN pip install poetry
 ENV POETRY_NO_INTERACTION=1 \
     POETRY_VIRTUALENVS_IN_PROJECT=1 \
@@ -10,6 +11,12 @@ ENV POETRY_NO_INTERACTION=1 \
     POETRY_CACHE_DIR=/tmp/poetry_cache
 RUN poetry install && rm -rf $POETRY_CACHE_DIR
 RUN poetry env use 3.11
+
+COPY . .
+FROM python:3.11.8-slim-bullseye
+WORKDIR /app
+COPY --from=builder /app /app
+
 
 EXPOSE 8080
 
