@@ -58,8 +58,10 @@ python3 create_collection.py
 ### Import documents to vectorDB
 ```bash
 cd vectorDB
-python3 read_docs.py
+python3 read_docs.py --source <source_type>
 ```
+
+- `<source_type>`: `local` or `github`
 
 ### Backend
 ```bash

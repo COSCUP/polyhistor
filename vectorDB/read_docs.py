@@ -1,5 +1,6 @@
 import os
 import sys
+from argparse import ArgumentParser, Namespace
 from getpass import getpass
 
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -22,7 +23,28 @@ if not ACCESS_TOKEN:
     ACCESS_TOKEN = getpass()
 
 
-def main():
+def get_doc_config(source: str, host: str | None = None):
+    print(f"source: {source}")
+    if source == "local":
+        assert host is not None
+        documentLoaderConfig = {
+            "name": "CustomDirectoryLoader",
+            "directory_path": f"{project_root}/testdata",
+            "client": QdrantClient(host),
+        }
+    else:
+        documentLoaderConfig = {
+            "name": "GithubFileLoader",
+            "repo": "COSCUP/COSCUP-Volunteer",
+            "access_token": ACCESS_TOKEN,
+            "github_api_url": "https://api.github.com",
+            "branch": "main",
+            "file_extension": ".md",
+        }
+    return documentLoaderConfig
+
+
+def main(args):
     config = get_config(config_path=f"{project_root}/config.yaml")
     db = VectorDB(host=config.database.external_host)
     COLLECTION_NAME = config.database.collection
@@ -44,21 +66,7 @@ def main():
     splitters = TextSplitter()
     splitter = splitters.create(splitterConfig)
 
-    # local files
-    documentLoaderConfig = {
-        "name": "CustomDirectoryLoader",
-        "directory_path": f"{project_root}/testdata",
-        "client": QdrantClient(config.database.external_host),
-    }
-    # github repository # TODO: detect github file changes
-    # documentLoaderConfig = {
-    #     "name": "GithubFileLoader",
-    #     "repo": "COSCUP/COSCUP-Volunteer",
-    #     "access_token": ACCESS_TOKEN,
-    #     "github_api_url": "https://api.github.com",
-    #     "branch": "main",
-    #     "file_extension": ".md",
-    # }
+    documentLoaderConfig = get_doc_config(args.source, config.database.external_host)
 
     loader = DocumentLoader.create(documentLoaderConfig)
     documents = loader.load()
@@ -81,5 +89,14 @@ def main():
     db.upsert_data(COLLECTION_NAME, datas)
 
 
+def parse_args() -> Namespace:
+    parser = ArgumentParser()
+    parser.add_argument("--source", type=str, help="local, github", default="local")
+
+    args = parser.parse_args()
+    return args
+
+
 if __name__ == "__main__":
-    main()
+    args = parse_args()
+    main(args)
