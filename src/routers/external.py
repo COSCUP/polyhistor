@@ -87,7 +87,7 @@ async def chatbot(text: str = Form(...)):
     data = Query(query=text.lower())
     contents = await askAPI(data)
 
-    ans = "Question: " + text + "\n\n" + "Answer: " + "\n" + contents
-
+    ans = "Question: " + text + "\n\n" + "Answer: " + "\n" + contents + "\n\n" + "如果有什麼問題可以直接留言給我們，如果覺得答案不符合需求，也歡迎直接在留言處提供文件並標注 @jefflu 或 @jimmy_hong 或 @irischen"
+    
     gc.collect()
     return JSONResponse(content={"response_type": "in_channel", "text": ans})
