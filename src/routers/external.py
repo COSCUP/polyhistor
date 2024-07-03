@@ -1,7 +1,9 @@
+import gc
 import os
+import warnings
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, status, Form
+from fastapi import APIRouter, Form, status
 from fastapi.responses import JSONResponse
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Qdrant
@@ -13,8 +15,26 @@ from src.models import Query
 from src.utils.config import get_config
 from src.utils.exp import parse_answer
 
+warnings.filterwarnings("ignore")
+
 router = APIRouter()
 load_dotenv()
+
+config = get_config(config_path="config.yaml")
+embeddings_model = config.model.embeddings_model
+model_kwargs = {"device": "cpu"}
+encode_kwargs = {"normalize_embeddings": False}
+embeddings = HuggingFaceEmbeddings(
+    model_name=embeddings_model,
+    model_kwargs=model_kwargs,
+    encode_kwargs=encode_kwargs,
+)
+COLLECTION = config.database.collection
+
+
+@router.get("/")
+def healthCHeck():
+    return {"Status": "OK"}
 
 
 @router.get("/health")
@@ -34,17 +54,6 @@ async def askAPI(data: Query):
             content={"message": "empty query is not allowed"},
         )
 
-    config = get_config(config_path="config.yaml")
-    embeddings_model = config.model.embeddings_model
-    model_kwargs = {"device": "cpu"}
-    encode_kwargs = {"normalize_embeddings": False}
-    embeddings = HuggingFaceEmbeddings(
-        model_name=embeddings_model,
-        model_kwargs=model_kwargs,
-        encode_kwargs=encode_kwargs,
-    )
-    COLLECTION = config.database.collection
-    print(os.getenv("MODE"))
     if os.getenv("MODE") == "dev":
         host = config.database.external_host
     else:
@@ -64,7 +73,8 @@ async def askAPI(data: Query):
     fused_results = parse_fusion_results(multiquerychain.invoke({"original_query": data.query}))
     answer = answerchain.invoke({"question": data.query, "context": "\n\n".join(fused_results["content"])})
     answer = parse_answer(answer, fused_results["metadata"])
-    print(answer)
+    del vectorstore
+    del retriever
 
     return answer
 
@@ -78,4 +88,6 @@ async def chatbot(text: str = Form(...)):
     contents = await askAPI(data)
 
     ans = "Question: " + text + "\n\n" + "Answer: " + "\n" + contents
+
+    gc.collect()
     return JSONResponse(content={"response_type": "in_channel", "text": ans})
