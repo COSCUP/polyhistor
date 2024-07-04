@@ -8,6 +8,8 @@ services:
       - "8080:8080"
     networks:
       - polyhistor
+    restart: always
+    mem_limit: 2.5g
   qdrant:
     image: qdrant/qdrant
     restart: always
