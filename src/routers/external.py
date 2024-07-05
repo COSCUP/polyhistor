@@ -66,7 +66,7 @@ async def askAPI(data: Query):
         content_payload_key="content",
     )
 
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 5}, search_type="mmr")
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 3, "score_threshold": 0.6}, search_type="mmr")
     answerchain = answerChain(model=config.model.llm)
     multiquerychain = multiqueryChain(retriever=retriever, model=config.model.llm)
 
