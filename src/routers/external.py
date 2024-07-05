@@ -76,7 +76,7 @@ async def askAPI(data: Query):
     del vectorstore
     del retriever
 
-    return answer
+    return {"result": answer}
 
 
 @router.post(
@@ -87,7 +87,7 @@ async def chatbot(text: str = Form(...)):
     data = Query(query=text.lower())
     contents = await askAPI(data)
 
-    ans = "Question: " + text + "\n\n" + "Answer: " + "\n" + contents
+    ans = "Question: " + text + "\n\n" + "Answer: " + "\n" + contents["result"]
 
     gc.collect()
     return JSONResponse(content={"response_type": "in_channel", "text": ans})

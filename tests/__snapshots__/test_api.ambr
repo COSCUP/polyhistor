@@ -1,0 +1,52 @@
+# serializer version: 1
+# name: test_askAPI
+  dict({
+    'result': '''
+      志工平台是 COSCUP（開放源碼用戶大會）的管理和組織志工的工具。它可以用於申請各式各樣的志工福利，以及記錄自己的志工經歷。在加入 COSCUP 志工過程中，所使用的平台是 COSCUP 為管理志工所開發的[志工服務平台](https://volunteer.coscup.org/)。
+      
+      2022 年志工服務平台主要集中在解決志工登錄自動化和其他繁瑣的手工事務。透過「流程改善」，整理出規則的流程後，可以協助轉移到志工平台上完成。可能需要志工協助的部分包括社群議程軌等。
+      
+      如何貢獻專案可以參考「[志工平台文件](https://volunteer.coscup.org/docs/)」。在進行以下操作前，請先準備好所需內容，以便在設定流程或之後行政組詢問時會用到。
+       Source: 
+      https://github.com/COSCUP/COSCUP-Volunteer/blob/main/docs_dev/docs/announcement/pycontw_2023_sprints.zh-TW.md
+      https://github.com/COSCUP/COSCUP-Volunteer/blob/main/docs_dev/docs/about_coscup/team_leader_handbook.zh-TW.md
+      https://github.com/COSCUP/COSCUP-Volunteer/blob/main/docs_dev/docs/about_coscup/team_member_handbook.zh-TW.md
+  
+    ''',
+  })
+# ---
+# name: test_askAPI_empty_query
+  dict({
+    'message': 'empty query is not allowed',
+  })
+# ---
+# name: test_chatbot
+  dict({
+    'response_type': 'in_channel',
+    'text': '''
+      Question: 志工平台是什麼?
+      
+      Answer: 
+      志工平台是 COSCUP（開放源碼用戶大會）的管理和組織志工的工具。它可以用於申請各式各樣的志工福利，以及記錄自己的志工經歷。在加入 COSCUP 志工過程中，所使用的平台是 COSCUP 為管理志工所開發的[志工服務平台](https://volunteer.coscup.org/)。
+      
+      2022 年志工服務平台主要集中在解決志工登錄自動化和其他繁瑣的手工事務。透過「流程改善」，整理出規則的流程後，可以協助轉移到志工平台上完成。可能需要志工協助的部分包括社群議程軌等。
+      
+      如何貢獻專案可以參考「[志工平台文件](https://volunteer.coscup.org/docs/)」。在進行以下操作前，請先準備好所需內容，以便在設定流程或之後行政組詢問時會用到。
+       Source: 
+      https://github.com/COSCUP/COSCUP-Volunteer/blob/main/docs_dev/docs/announcement/pycontw_2023_sprints.zh-TW.md
+      https://github.com/COSCUP/COSCUP-Volunteer/blob/main/docs_dev/docs/about_coscup/team_leader_handbook.zh-TW.md
+      https://github.com/COSCUP/COSCUP-Volunteer/blob/main/docs_dev/docs/about_coscup/team_member_handbook.zh-TW.md
+  
+    ''',
+  })
+# ---
+# name: test_health_check
+  dict({
+    'Status': 'OK',
+  })
+# ---
+# name: test_health_check_alternative
+  dict({
+    'Status': 'OK',
+  })
+# ---

@@ -11,7 +11,7 @@ ENV POETRY_VERSION=1.7.1 \
     POETRY_VIRTUALENVS_CREATE=1
 
 RUN pip install "poetry==$POETRY_VERSION"
-RUN poetry install --no-interaction --no-ansi --verbose \
+RUN poetry install --no-interaction --no-ansi --verbose --without test\
      && rm -rf $POETRY_CACHE_DIR
 RUN poetry env use 3.11
 
