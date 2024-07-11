@@ -2,6 +2,7 @@ import gc
 import os
 import warnings
 
+import httpx
 from dotenv import load_dotenv
 from fastapi import APIRouter, Form, status
 from fastapi.responses import JSONResponse
@@ -84,10 +85,27 @@ async def askAPI(data: Query):
     tags=["external"],
 )
 async def chatbot(text: str = Form(...)):
+    if os.getenv("MODE") == "dev":
+        print("收到問題囉～請稍等一下")
+    else:
+        await post_to_mattermost("收到問題囉～請稍等一下")
+
     data = Query(query=text.lower())
     contents = await askAPI(data)
 
-    ans = "Question: " + text + "\n\n" + "Answer: " + "\n" + contents
+    ans = "Question: " + text + "\n\n" + "Answer: " + "\n" + contents + "\n\n" + "如果有什麼問題可以直接留言給我們，如果覺得答案不符合需求，也歡迎直接在留言處提供文件並標注 @jefflu 或 @jimmy_hong 或 @irischen"
 
     gc.collect()
     return JSONResponse(content={"response_type": "in_channel", "text": ans})
+
+
+async def post_to_mattermost(message: str):
+    webhook_url = os.getenv("MATTERMOST_WEBHOOK_URL")
+    if not webhook_url:
+        print("Mattermost webhook URL is not set")
+        return
+
+    payload = {"text": message}
+
+    async with httpx.AsyncClient() as client:
+        response = await client.post(webhook_url, json=payload)
