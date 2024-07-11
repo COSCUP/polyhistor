@@ -84,11 +84,11 @@ async def askAPI(data: Query):
     "/api/v1/chatbot",
     tags=["external"],
 )
-async def chatbot(text: str = Form(...)):
+async def chatbot(user_name: str = Form(...), text: str = Form(...), response_url: str = Form(...)):
     if os.getenv("MODE") == "dev":
         print("收到問題囉～請稍等一下")
     else:
-        await post_to_mattermost("收到問題囉～請稍等一下")
+        await send_wait_response(response_url)
 
     data = Query(query=text.lower())
     contents = await askAPI(data)
@@ -99,13 +99,12 @@ async def chatbot(text: str = Form(...)):
     return JSONResponse(content={"response_type": "in_channel", "text": ans})
 
 
-async def post_to_mattermost(message: str):
-    webhook_url = os.getenv("MATTERMOST_WEBHOOK_URL")
-    if not webhook_url:
-        print("Mattermost webhook URL is not set")
-        return
-
-    payload = {"text": message}
-
+async def send_wait_response(response_url: str):
     async with httpx.AsyncClient() as client:
-        response = await client.post(webhook_url, json=payload)
+        response = await client.post(
+            response_url,
+            json={
+                "response_type": "in_channel",
+                "text": "收到問題囉～請稍等一下",
+            },
+        )

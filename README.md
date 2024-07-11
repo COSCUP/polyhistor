@@ -29,13 +29,11 @@ LANGCHAIN_TRACING_V2=true
 LANGCHAIN_API_KEY=<LANGCHAIN_API_KEY>
 MODEL_API=<the model api from Mattermost>
 ACCESS_TOKEN=<Github access token>
-MATTERMOST_WEBHOOK_URL=<Mattermost webhook url>
 ```
 > Note:
 > 1. You can get the `LANGCHAIN_API_KEY` from [LangSmith](https://www.langchain.com/langsmith).
 > 2. Get the `MODEL_API` from [Mattermost](https://chat.coscup.org/coscup/pl/hjez3dwmtjbk8du1rih9ne66wo).
 > 3. How to get Github access token: [Github Docs](https://docs.github.com/en/authentication/
-> 4. Get the `MATTERMOST_WEBHOOK_URL` from Mattermost incoming webhook page and copy the URL from [polyhistor-wait](https://chat.coscup.org/coscup/integrations/incoming_webhooks)
 
 keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
 
