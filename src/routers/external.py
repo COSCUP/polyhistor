@@ -84,28 +84,39 @@ async def askAPI(data: Query):
     "/api/v1/chatbot",
     tags=["external"],
 )
-async def chatbot(text: str = Form(...)):
+async def chatbot(user_name: str = Form(...), text: str = Form(...), response_url: str = Form(...)):
     if os.getenv("MODE") == "dev":
         print("收到問題囉～請稍等一下")
     else:
-        await post_to_mattermost("收到問題囉～請稍等一下")
+        await send_wait_response(response_url)
 
     data = Query(query=text.lower())
     contents = await askAPI(data)
-
-    ans = "Question: " + text + "\n\n" + "Answer: " + "\n" + contents + "\n\n" + "如果有什麼問題可以直接留言給我們，如果覺得答案不符合需求，也歡迎直接在留言處提供文件並標注 @jefflu 或 @jimmy_hong 或 @irischen"
-
     gc.collect()
-    return JSONResponse(content={"response_type": "in_channel", "text": ans})
+
+    return JSONResponse(
+        content={
+            "response_type": "in_channel",
+            "text": f"Hi @{user_name}",
+            "attachments": [
+                {
+                    "fields": [
+                        {"short": False, "title": "Question", "value": text},
+                        {"short": False, "title": "Answer", "value": contents},
+                        {"short": False, "title": " ", "value": "如果有什麼問題可以直接留言給我們，如果覺得答案不符合需求，也歡迎直接在留言處提供文件並標注 @jefflu 或 @jimmy_hong 或 @irischen"},
+                    ]
+                }
+            ],
+        }
+    )
 
 
-async def post_to_mattermost(message: str):
-    webhook_url = os.getenv("MATTERMOST_WEBHOOK_URL")
-    if not webhook_url:
-        print("Mattermost webhook URL is not set")
-        return
-
-    payload = {"text": message}
-
+async def send_wait_response(response_url: str):
     async with httpx.AsyncClient() as client:
-        response = await client.post(webhook_url, json=payload)
+        response = await client.post(
+            response_url,
+            json={
+                "response_type": "in_channel",
+                "text": "收到問題囉～請稍等一下",
+            },
+        )
