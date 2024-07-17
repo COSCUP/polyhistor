@@ -1,5 +1,6 @@
 import gc
 import os
+import re
 import warnings
 
 import httpx
@@ -94,6 +95,15 @@ async def chatbot(user_name: str = Form(...), text: str = Form(...), response_ur
     contents = await askAPI(data)
     gc.collect()
 
+    match = re.search(r"(.*)Source: \n(.*)", contents, re.DOTALL)
+
+    if match:
+        llm_answer = match.group(1).strip()
+        source = match.group(2).strip()
+    else:
+        llm_answer = contents
+        source = "No source available"
+
     return JSONResponse(
         content={
             "response_type": "in_channel",
@@ -102,7 +112,8 @@ async def chatbot(user_name: str = Form(...), text: str = Form(...), response_ur
                 {
                     "fields": [
                         {"short": False, "title": "Question", "value": text},
-                        {"short": False, "title": "Answer", "value": contents},
+                        {"short": False, "title": "Answer", "value": llm_answer},
+                        {"short": False, "title": "Source", "value": source},
                         {"short": False, "title": " ", "value": "如果有什麼問題可以直接留言給我們，如果覺得答案不符合需求，也歡迎直接在留言處提供文件並標注 @jefflu 或 @jimmy_hong 或 @irischen"},
                     ]
                 }
