@@ -17,6 +17,9 @@ RUN poetry env use 3.11
 
 COPY . .
 FROM python:3.11.8-slim-bullseye
+
+WORKDIR /app
+
 ENV POETRY_VIRTUALENVS_IN_PROJECT=true \
     PATH="/app/.venv/bin:$PATH"
 COPY --from=builder /app /app

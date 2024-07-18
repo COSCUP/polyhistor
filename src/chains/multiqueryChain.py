@@ -34,12 +34,12 @@ def multiqueryChain(retriever, model):
     return chain
 
 
-def parse_fusion_results(results):
+def parse_fusion_results(results, max_results=5):
     content = []
     source_dict = set()
     metadata_rank = []
 
-    for res in results:
+    for res in results[:max_results]:
         content.append(res[0].page_content)
         source = res[0].metadata["source"]
         if source not in source_dict:
