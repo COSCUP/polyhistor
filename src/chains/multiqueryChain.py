@@ -24,6 +24,7 @@ def multiqueryChain(retriever, model):
     template = """
         You are a helpful assistant that generates multiple search queries based on a single input query.
         Generate multiple search queries related to: {original_query}
+        The generated 4 queries should contain the original query and be related to the original query.
         OUTPUT (4 queries):
     """
     prompt = ChatPromptTemplate.from_template(template)
