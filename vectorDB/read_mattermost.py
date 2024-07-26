@@ -97,10 +97,10 @@ def upload_to_qdrant(posts: list[Post], config) -> None:
             "content": post.message,
             "metadata": {
                 "user_id": post.user_id,
-                "source": post.username,
+                "username": post.username,
+                "create_at": post.create_at,
+                "post_id": post.post_id,
             },
-            "create_at": post.create_at,
-            "post_id": post.post_id,
         }
         data = {"vector": vector, "payload": payload}
         vectors.append(data)

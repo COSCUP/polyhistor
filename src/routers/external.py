@@ -48,7 +48,7 @@ def healthCHeck():
     "/api/v1/ask",
     tags=["external"],
 )
-async def askAPI(data: Query):
+async def askAPI(data: Query) -> str:
     if data.query is None or data.query == "":
         print(data)
         return JSONResponse(
@@ -68,13 +68,13 @@ async def askAPI(data: Query):
         content_payload_key="content",
     )
 
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 3, "score_threshold": 0.6}, search_type="mmr")
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 3, "score_threshold": 0.5}, search_type="mmr")
     answerchain = answerChain(model=config.model.llm)
     multiquerychain = multiqueryChain(retriever=retriever, model=config.model.llm)
 
-    fused_results = parse_fusion_results(multiquerychain.invoke({"original_query": data.query}))
-    answer = answerchain.invoke({"question": data.query, "context": "\n\n".join(fused_results["content"])})
-    answer = parse_answer(answer, fused_results["metadata"])
+    fused_results: dict[str, list] = parse_fusion_results(multiquerychain.invoke({"original_query": data.query}))
+    answer: str = answerchain.invoke({"question": data.query, "context": "\n\n".join(fused_results["content"])})
+    answer: str = parse_answer(answer, fused_results["metadata"])
     del vectorstore
     del retriever
 
@@ -99,7 +99,7 @@ async def chatbot(user_name: str = Form(...), text: str = Form(...), response_ur
 
     if match:
         llm_answer = match.group(1).strip()
-        source = match.group(2).strip()
+        source = match.group(2).strip() if len(match.group(2).strip()) > 0 else "No source available"
     else:
         llm_answer = contents
         source = "No source available"
