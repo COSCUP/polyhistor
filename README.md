@@ -34,6 +34,7 @@ ACCESS_TOKEN=<Github access token>
 > 1. You can get the `LANGCHAIN_API_KEY` from [LangSmith](https://www.langchain.com/langsmith).
 > 2. Get the `MODEL_API` from [Mattermost](https://chat.coscup.org/coscup/pl/hjez3dwmtjbk8du1rih9ne66wo).
 > 3. How to get Github access token: [Github Docs](https://docs.github.com/en/authentication/
+
 keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
 
 

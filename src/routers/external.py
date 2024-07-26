@@ -1,7 +1,9 @@
 import gc
 import os
+import re
 import warnings
 
+import httpx
 from dotenv import load_dotenv
 from fastapi import APIRouter, Form, status
 from fastapi.responses import JSONResponse
@@ -66,7 +68,7 @@ async def askAPI(data: Query):
         content_payload_key="content",
     )
 
-    retriever = vectorstore.as_retriever(search_kwargs={"k": 5}, search_type="mmr")
+    retriever = vectorstore.as_retriever(search_kwargs={"k": 3, "score_threshold": 0.6}, search_type="mmr")
     answerchain = answerChain(model=config.model.llm)
     multiquerychain = multiqueryChain(retriever=retriever, model=config.model.llm)
 
@@ -83,11 +85,49 @@ async def askAPI(data: Query):
     "/api/v1/chatbot",
     tags=["external"],
 )
-async def chatbot(text: str = Form(...)):
+async def chatbot(user_name: str = Form(...), text: str = Form(...), response_url: str = Form(...)):
+    if os.getenv("MODE") == "dev":
+        print("收到問題囉～請稍等一下")
+    else:
+        await send_wait_response(response_url)
+
     data = Query(query=text.lower())
     contents = await askAPI(data)
-
-    ans = "Question: " + text + "\n\n" + "Answer: " + "\n" + contents
-
     gc.collect()
-    return JSONResponse(content={"response_type": "in_channel", "text": ans})
+
+    match = re.search(r"(.*)Source: \n(.*)", contents, re.DOTALL)
+
+    if match:
+        llm_answer = match.group(1).strip()
+        source = match.group(2).strip()
+    else:
+        llm_answer = contents
+        source = "No source available"
+
+    return JSONResponse(
+        content={
+            "response_type": "in_channel",
+            "text": f"Hi @{user_name}",
+            "attachments": [
+                {
+                    "fields": [
+                        {"short": False, "title": "Question", "value": text},
+                        {"short": False, "title": "Answer", "value": llm_answer},
+                        {"short": False, "title": "Source", "value": source},
+                        {"short": False, "title": " ", "value": "如果有什麼問題可以直接留言給我們，如果覺得答案不符合需求，也歡迎直接在留言處提供文件並標注 @jefflu 或 @jimmy_hong 或 @irischen"},
+                    ]
+                }
+            ],
+        }
+    )
+
+
+async def send_wait_response(response_url: str):
+    async with httpx.AsyncClient() as client:
+        response = await client.post(
+            response_url,
+            json={
+                "response_type": "in_channel",
+                "text": "收到問題囉～請稍等一下",
+            },
+        )

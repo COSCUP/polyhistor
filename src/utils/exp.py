@@ -37,5 +37,5 @@ def parse_answer(answer, metadata):
     content = f"{answer}\n Source: \n"
 
     for source in metadata[:3]:
-        content += f"{source}\n"
+        content += f"- {source}\n"
     return content
