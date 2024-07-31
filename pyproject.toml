@@ -23,6 +23,13 @@ torch = {url = "https://download.pytorch.org/whl/cpu-cxx11-abi/torch-2.2.2%2Bcpu
 sentence-transformers = "^3.0.1"
 
 
+[tool.poetry.group.test.dependencies]
+vcrpy = "^6.0.1"
+pytest = "^8.2.2"
+syrupy = "^4.6.1"
+pytest-asyncio = "^0.23.7"
+pytest-recording = "^0.13.1"
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

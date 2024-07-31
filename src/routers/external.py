@@ -78,7 +78,7 @@ async def askAPI(data: Query):
     del vectorstore
     del retriever
 
-    return answer
+    return {"result": answer}
 
 
 @router.post(
