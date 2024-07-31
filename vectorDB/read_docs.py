@@ -34,12 +34,13 @@ def get_doc_config(source: str, host: str | None = None):
         }
     else:
         documentLoaderConfig = {
-            "name": "GithubFileLoader",
+            "name": "CustomGithubFileLoader",
             "repo": "COSCUP/COSCUP-Volunteer",
             "access_token": ACCESS_TOKEN,
             "github_api_url": "https://api.github.com",
             "branch": "main",
             "file_extension": ".md",
+            "client": QdrantClient(host),
         }
     return documentLoaderConfig
 
