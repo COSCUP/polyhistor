@@ -1,4 +1,8 @@
-# RAG
+# Polyhistor
+
+## Introduction
+
+Polyhistor is a AI bot that can answer questions from documents.
 
 ## Installation
 
@@ -29,13 +33,15 @@ LANGCHAIN_TRACING_V2=true
 LANGCHAIN_API_KEY=<LANGCHAIN_API_KEY>
 MODEL_API=<the model api from Mattermost>
 ACCESS_TOKEN=<Github access token>
+MATTERMOST_TOKEN=<Mattermost token>
 ```
 > Note:
 > 1. You can get the `LANGCHAIN_API_KEY` from [LangSmith](https://www.langchain.com/langsmith).
 > 2. Get the `MODEL_API` from [Mattermost](https://chat.coscup.org/coscup/pl/hjez3dwmtjbk8du1rih9ne66wo).
-> 3. How to get Github access token: [Github Docs](https://docs.github.com/en/authentication/
+> 3. (Optional) How to get Github access token: [Github Docs](https://docs.github.com/en/authentication/)
+> 4. (Optional) How to get Mattermost token: [Mattermost Docs](https://api.mattermost.com/#tag/authentication)
 
-keeping-your-account-and-data-secure/managing-your-personal-access-tokens).
+
 
 
 ## Usage
@@ -52,17 +58,26 @@ docker-compose up -d
 
 ### Create Qdrant collection
 ```bash
-cd vectorDB
-python3 create_collection.py
+python vectorDB/create_collection.py
 ```
 
 ### Import documents to vectorDB
 ```bash
-cd vectorDB
-python3 read_docs.py --source <source_type>
+python vectorDB/read_docs.py --source <source_type>
 ```
 
 - `<source_type>`: `local` or `github`
+
+> If you choose `github`, you need to add `ACCESS_TOKEN` in `.env`
+
+
+### Imort Mattermost messages to vectorDB
+```bash
+python vectorDB/read_mattermost.py
+```
+
+> You need to add `MATTERMOST_TOKEN` in `.env`
+> It will import the messages from specific users.
 
 ### Backend
 ```bash

@@ -36,7 +36,7 @@ class VectorDB:
         初始化embedding model
         """
         return HuggingFaceBgeEmbeddings(
-            model_name=self.embeddingConfig["name"],
+            model_name=self.embeddingConfig["model_name"],
             model_kwargs=self.embeddingConfig["model_kwargs"],
             encode_kwargs=self.embeddingConfig["encode_kwargs"],
         )
@@ -82,3 +82,19 @@ class VectorDB:
             append_payload=True,
         )
         return searchResult
+
+    def delete_messages_by_username(self, collection_name: str, username: str):
+        """
+        Delete messages by username from the collection
+        """
+        query = models.Filter(must=[models.FieldCondition(key="username", match=models.MatchValue(value=username))])
+
+        points = self.client.scroll(collection_name=collection_name, filter=query, with_payload=True)
+
+        point_ids = [point.id for point in points]
+
+        if point_ids:
+            self.client.delete(collection_name=collection_name, point_ids=point_ids)
+            print(f"Deleted {len(point_ids)} messages from username '{username}'")
+        else:
+            print(f"No messages found for username '{username}'")

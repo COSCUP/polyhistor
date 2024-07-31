@@ -24,6 +24,7 @@ def multiqueryChain(retriever, model):
     template = """
         You are a helpful assistant that generates multiple search queries based on a single input query.
         Generate multiple search queries related to: {original_query}
+        The generated 4 queries should contain the original query and be related to the original query.
         OUTPUT (4 queries):
     """
     prompt = ChatPromptTemplate.from_template(template)
@@ -34,16 +35,19 @@ def multiqueryChain(retriever, model):
     return chain
 
 
-def parse_fusion_results(results, max_results=5):
+def parse_fusion_results(results, max_results=5) -> dict[str, list]:
     content = []
     source_dict = set()
     metadata_rank = []
 
     for res in results[:max_results]:
         content.append(res[0].page_content)
-        source = res[0].metadata["source"]
+        post_id = res[0].metadata.get("post_id")
+        source = f"https://chat.coscup.org/coscup/pl/{post_id}" if post_id else res[0].metadata["source"]
+
         if source not in source_dict:
             source_dict.add(source)
+
             if source.startswith("http"):
                 metadata_rank.append(source)
             else:
