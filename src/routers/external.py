@@ -93,6 +93,7 @@ async def chatbot(user_name: str = Form(...), text: str = Form(...), response_ur
 
     data = Query(query=text.lower())
     contents = await askAPI(data)
+    contents = contents["result"]
     gc.collect()
 
     match = re.search(r"(.*)Source: \n(.*)", contents, re.DOTALL)
