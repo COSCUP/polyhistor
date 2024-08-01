@@ -1,16 +1,14 @@
-from langchain_community.document_loaders.github import GithubFileLoader
-
-from classes.custom_loader import CustomDirectoryLoader
+from classes.custom_loader import CustomDirectoryLoader, CustomGithubFileLoader
 
 
 class DocumentLoader:
     loaders = {
         "CustomDirectoryLoader": CustomDirectoryLoader,
-        "GithubFileLoader": GithubFileLoader,
+        "CustomGithubFileLoader": CustomGithubFileLoader,
     }
     metadata = {
         "CustomDirectoryLoader": ["source", "hash"],
-        "GithubFileLoader": ["source", "sha"],
+        "CustomGithubFileLoader": ["source", "sha"],
     }
 
     @staticmethod
@@ -19,7 +17,7 @@ class DocumentLoader:
         if not loader_class:
             raise ValueError(f"Unsupported document loader: {config['name']}")
 
-        if config["name"] == "GithubFileLoader":
+        if config["name"] == "CustomGithubFileLoader":
             file_extension = config.get("file_extension", "")
             file_filter = lambda file_path: file_path.endswith(file_extension)
             config.pop("file_extension", None)
