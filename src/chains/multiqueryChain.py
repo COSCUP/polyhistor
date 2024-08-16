@@ -35,7 +35,7 @@ def multiqueryChain(retriever, model):
     return chain
 
 
-def parse_fusion_results(results, max_results=5) -> dict[str, list]:
+def parse_fusion_results(results, max_results=5) -> dict:
     content = []
     source_dict = set()
     metadata_rank = []
@@ -53,4 +53,4 @@ def parse_fusion_results(results, max_results=5) -> dict[str, list]:
             else:
                 metadata_rank.append(source.split("/")[-1])
 
-    return {"content": content, "metadata": metadata_rank}
+    return {"metadata": metadata_rank, "context": "\n\n".join(content)}

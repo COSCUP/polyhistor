@@ -14,7 +14,7 @@ def answerChain(model):
     6. 回答需使用台灣用語
 
     $$$$$$
-    問題: {question}
+    問題: {original_query}
     $$$$$$
     {context}
 

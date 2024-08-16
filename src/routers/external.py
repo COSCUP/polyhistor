@@ -7,8 +7,10 @@ import httpx
 from dotenv import load_dotenv
 from fastapi import APIRouter, Form, status
 from fastapi.responses import JSONResponse
+from langchain.chains import TransformChain
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import Qdrant
+from langchain_core.runnables import RunnableParallel, RunnablePassthrough
 from qdrant_client import QdrantClient
 
 from src.chains.answerChain import answerChain
@@ -48,7 +50,7 @@ def healthCHeck():
     "/api/v1/ask",
     tags=["external"],
 )
-async def askAPI(data: Query) -> str:
+async def askAPI(data: Query):
     if data.query is None or data.query == "":
         print(data)
         return JSONResponse(
@@ -70,11 +72,26 @@ async def askAPI(data: Query) -> str:
 
     retriever = vectorstore.as_retriever(search_kwargs={"k": 3, "score_threshold": 0.5}, search_type="mmr")
     answerchain = answerChain(model=config.model.llm)
-    multiquerychain = multiqueryChain(retriever=retriever, model=config.model.llm)
 
-    fused_results: dict[str, list] = parse_fusion_results(multiquerychain.invoke({"original_query": data.query}))
-    answer: str = answerchain.invoke({"question": data.query, "context": "\n\n".join(fused_results["content"])})
-    answer: str = parse_answer(answer, fused_results["metadata"])
+    def retrieval_transform(inputs: dict) -> dict:
+        multiquerychain = multiqueryChain(retriever=retriever, model=config.model.llm)
+        fused_results: dict[str, list] = parse_fusion_results(multiquerychain.invoke({"original_query": inputs["original_query"]}))
+
+        return fused_results
+
+    retrieval_chain = TransformChain(input_variables=["original_query"], output_variables=["metadata", "context"], transform=retrieval_transform)
+
+    rag_chain = (
+        RunnableParallel(original_query=RunnablePassthrough())
+        .assign(multi_query=retrieval_chain)
+        .assign(context=lambda x: x["multi_query"]["context"], metadata=lambda x: x["multi_query"]["metadata"])
+        .assign(answer=answerchain)
+        .pick(["context", "metadata", "answer"])
+    )
+
+    out = rag_chain.invoke(data.query)
+    answer: str = parse_answer(out["answer"], out["metadata"])
+
     del vectorstore
     del retriever
 
